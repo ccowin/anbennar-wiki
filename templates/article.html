@@ -1,0 +1,29 @@
+<!-- article.html -->
+...
+<h4>List of articles</h4>
+<ul>
+  <!-- Need to get the first article (root) -->
+  {% url 'wiki:get' path=urlpath.root.path as rootpath %}
+  <li>
+    <a href="{{ rootpath }}">
+      {{ urlpath.root.article.current_revision.title }}
+    </a>
+  </li>
+
+  <!-- Now get all the descendent articles of the root -->
+  {% for child in urlpath.root.get_descendants %}
+    <!-- Don't list articles marked for deletion -->
+    {% if not child.is_deleted %}
+      {% with ''|center:child.level as range %}
+        {% for _ in range %}<ul>{% endfor %}
+        {% url 'wiki:get' path=child.path as childpath %}
+        <li>
+          <a href="{{ childpath }}">
+            {{ child.article.current_revision.title }}
+          </a>
+        </li>
+        {% for _ in range %}</ul>{% endfor %}
+      {% endwith %}
+    {% endif %}
+  {% endfor %}
+</ul>
